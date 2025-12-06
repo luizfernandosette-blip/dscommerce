@@ -1,6 +1,7 @@
 package com.devsuperior.dscommerce.entities;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -36,13 +37,12 @@ public class Product {
 	private Set<Category> categories = new HashSet<>();   //relacionamento muitos para muitos com categoria
 	
 	@OneToMany(mappedBy="id.product")
-	private Set<OrderItem> itens = new HashSet<>();
+	private Set<OrderItem> items = new HashSet<>();
 	
 	public Product() {
 		
 	}
-	
-	
+		
 
 	public Product(Long id, String name, String description, Double price, String imgUrl) {
 		super();
@@ -100,6 +100,17 @@ public class Product {
 	public Set<Category> getCategories() {  //getter da lista de categorias
 		return categories;
 	}
+
+
+	public Set<OrderItem> getItens() {
+		return items;
+	}
+
+	public List<Order> getOrders(){
+		return items.stream().map(x -> x.getOrder()).toList();
+	}
+
+	
 
 
 
