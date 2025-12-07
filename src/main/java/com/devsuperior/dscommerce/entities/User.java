@@ -23,7 +23,7 @@ public class User {
    
    @Column(unique = true)   //evitar repeticao do email
    private String email;
-   private String fone;
+   private String phone;
    private LocalDate birthDate;
    private String password;
    
@@ -39,7 +39,7 @@ public class User {
 	this.id = id;
 	this.name = name;
 	this.email = email;
-	this.fone = fone;
+	this.phone = fone;
 	this.birthDate = birthDate;
 	this.password = password;
    }
@@ -68,12 +68,12 @@ public class User {
 	this.email = email;
    }
 
-   public String getFone() {
-	return fone;
+   public String getPhone() {
+	return phone;
    }
 
-   public void setFone(String fone) {
-	this.fone = fone;
+   public void setPhone(String fone) {
+	this.phone = fone;
    }
 
    public LocalDate getBirthDate() {
