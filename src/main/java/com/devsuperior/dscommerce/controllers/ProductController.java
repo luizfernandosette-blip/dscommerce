@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +48,15 @@ public class ProductController { //Alguns gostam de usar Controller outros Resou
 		dto = service.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
+	}
+	
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+		
+		dto = service.update(id, dto);
+		return ResponseEntity.ok(dto);   //Boas praticas customizacao do codigo de retorno da resposta
+		
+		
 	}
 	
 }//A customizacao do retorno da paginacao é feita do lado do front end. No postman por exemplo:
