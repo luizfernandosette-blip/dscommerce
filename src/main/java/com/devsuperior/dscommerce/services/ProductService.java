@@ -1,6 +1,5 @@
 package com.devsuperior.dscommerce.services;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 @Service  //esse é o service de produtos
 public class ProductService {
@@ -22,10 +22,11 @@ public class ProductService {
 	@Transactional(readOnly = true)  //import do SPRINGFRAMEWORK, nao é do jackarta
 	public ProductDTO findById(Long id) {
 		
-		Optional<Product> result = repository.findById(id); 
-		Product product = result.get();
-		ProductDTO dto = new ProductDTO(product);
-		return dto;
+		Product product = repository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Recurso nao encontrado"));
+		
+		return new ProductDTO(product);
+		
 	}
 	
 	@Transactional(readOnly = true)  //import do SPRINGFRAMEWORK, nao é do jackarta
