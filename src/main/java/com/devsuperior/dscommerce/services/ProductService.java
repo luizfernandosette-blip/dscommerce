@@ -1,17 +1,20 @@
 package com.devsuperior.dscommerce.services;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
 import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service  //esse é o service de produtos
 public class ProductService {
@@ -53,21 +56,36 @@ public class ProductService {
 	@Transactional
 	public ProductDTO update(Long id, ProductDTO dto) {
 		
-		
-		Product entity = repository.getReferenceById(id); //mudanca aqui
-		entity.setName(dto.getName());
-		entity.setDescription(dto.getDescription());
-		entity.setPrice(dto.getPrice());
-		entity.setImgUrl(dto.getImgUrl());
-		
-		entity = repository.save(entity);
-		return new ProductDTO(entity);
+		try {
+			Product entity = repository.getReferenceById(id); 
+			entity.setName(dto.getName());
+			entity.setDescription(dto.getDescription());
+			entity.setPrice(dto.getPrice());
+			entity.setImgUrl(dto.getImgUrl());
+			
+			entity = repository.save(entity);
+			return new ProductDTO(entity);
+			
+		}catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		//como ja esta pronto a estrutura do handler, sempre que lancar exception desse tipo vai ter o retorno json apropriado
 	}
 	
-	@Transactional //import do SPRINGFRAMEWORK, nao é do jackarta
+	@Transactional(propagation = Propagation.SUPPORTS)
+	//import do SPRINGFRAMEWORK, nao é do jackarta
 	public void delete(Long id) {
 		
-		repository.deleteById(id);
+			if (!repository.existsById(id)) {
+				throw new ResourceNotFoundException("Recurso não encontrado");
+			}
+			try {
+		        	repository.deleteById(id);    		
+			}
+		    	catch (DataIntegrityViolationException e) {
+		        	throw new DatabaseException("Falha de integridade referencial");
+		   	}
+		
 	}
 	
 }
