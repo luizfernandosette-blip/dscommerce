@@ -63,4 +63,10 @@ public class ProductService {
 		return new ProductDTO(entity);
 	}
 	
+	@Transactional //import do SPRINGFRAMEWORK, nao é do jackarta
+	public void delete(Long id) {
+		
+		repository.deleteById(id);
+	}
+	
 }
