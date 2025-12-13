@@ -54,7 +54,7 @@ public class ProductController { //Alguns gostam de usar Controller outros Resou
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<ProductDTO> update(@Valid @PathVariable Long id, @RequestBody ProductDTO dto) {
+	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
 		
 		dto = service.update(id, dto);
 		return ResponseEntity.ok(dto);   //Boas praticas customizacao do codigo de retorno da resposta
