@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,9 +39,10 @@ public class ProductController { //Alguns gostam de usar Controller outros Resou
 	}
 		 
 	@GetMapping
-	public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable) { //O import é do spring.data.domain
+	public ResponseEntity<Page<ProductDTO>> findAll(
+			@RequestParam(name = "name", defaultValue = "") String name, Pageable pageable) { //O import é do spring.data.domain
 		
-		Page<ProductDTO> dto = service.findAll(pageable);
+		Page<ProductDTO> dto = service.findAll(name, pageable);
 		return ResponseEntity.ok(dto);		
 		
 	}//exemplo de uma consulta paginada
