@@ -1,81 +1,75 @@
 package com.devsuperior.dscommerce.entities;
 
-import java.util.Objects;
-
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+import java.util.Objects;
+
 @Entity
-@Table(name= "tb_order_item")
+@Table(name = "tb_order_item")
 public class OrderItem {
 
-	@EmbeddedId
-	private OrderItemPk id = new OrderItemPk();
-	
-	private Integer quantity;
-	private Double price;
-	
-	public OrderItem() {
-		
-	}
+    @EmbeddedId
+    private OrderItemPK id = new OrderItemPK();
 
-	public OrderItem(Order order, Product product, Integer quantity, Double price) {
-		id.setOrder(order);
-		id.setProduct(product);   //construtor modificado
-		this.quantity = quantity;
-		this.price = price;
-	}
+    private Integer quantity;
+    private Double price;
 
-	public Integer getQuantity() {
-		return quantity;
-	}
+    public OrderItem() {
+    }
 
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
+    public OrderItem(Order order, Product product, Integer quantity, Double price) {
+        id.setOrder(order);
+        id.setProduct(product);
+        this.quantity = quantity;
+        this.price = price;
+    }
 
-	public Double getPrice() {
-		return price;
-	}
+    public Order getOrder() {
+        return id.getOrder();
+    }
 
-	public void setPrice(Double price) {
-		this.price = price;
-	}
-	// macete do professor
-	public Order getOrder() {
-		return id.getOrder();
-	}
-	
-	public void setOrder (Order order) {
-		id.setOrder(order);
-	}
-	
-	public Product getProduct() {
-		return id.getProduct();
-	}
-	
-	public void setProduct (Product product) {
-		id.setProduct(product);
-	}
+    public void setOrder(Order order) {
+        id.setOrder(order);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
+    public Product getProduct() {
+        return id.getProduct();
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		OrderItem other = (OrderItem) obj;
-		return Objects.equals(id, other.id);
-	}
-	
-	
-	
+    public void setProduct(Product product) {
+        id.setProduct(product);
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OrderItem orderItem = (OrderItem) o;
+
+        return Objects.equals(id, orderItem.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

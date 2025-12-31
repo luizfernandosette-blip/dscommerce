@@ -16,76 +16,63 @@ import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
 
-@Service  //esse é o service de produtos
+@Service
 public class ProductService {
-	
-	@Autowired  //para instanciar automaticamente
-	private ProductRepository repository;
-	
-	@Transactional(readOnly = true)  //import do SPRINGFRAMEWORK, nao é do jackarta
-	public ProductDTO findById(Long id) {
-		
-		Product product = repository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Recurso nao encontrado"));
-		
-		return new ProductDTO(product);
-		
-	}
-	
-	@Transactional(readOnly = true)  //import do SPRINGFRAMEWORK, nao é do jackarta
-	public Page<ProductDTO> findAll(String name, Pageable pageable) {
-		
-		Page<Product> result = repository.searchByName(name, pageable);   
-		
-		return result.map(x -> new ProductDTO(x)); //lambda
-	}
-	
-	@Transactional
-	public ProductDTO insert(ProductDTO dto) {
-		
-		Product entity = new Product();
-		entity.setName(dto.getName());
-		entity.setDescription(dto.getDescription());
-		entity.setPrice(dto.getPrice());
-		entity.setImgUrl(dto.getImgUrl());
-		
-		entity = repository.save(entity);
-		return new ProductDTO(entity);
-	}
-	
-	@Transactional
-	public ProductDTO update(Long id, ProductDTO dto) {
-		
-		try {
-			Product entity = repository.getReferenceById(id); 
-			entity.setName(dto.getName());
-			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
-			entity.setImgUrl(dto.getImgUrl());
-			
-			entity = repository.save(entity);
-			return new ProductDTO(entity);
-			
-		}catch(EntityNotFoundException e) {
-			throw new ResourceNotFoundException("Recurso não encontrado");
-		}
-		//como ja esta pronto a estrutura do handler, sempre que lancar exception desse tipo vai ter o retorno json apropriado
-	}
-	
-	@Transactional(propagation = Propagation.SUPPORTS)
-	//import do SPRINGFRAMEWORK, nao é do jackarta
-	public void delete(Long id) {
-		
-			if (!repository.existsById(id)) {
-				throw new ResourceNotFoundException("Recurso não encontrado");
-			}
-			try {
-		        	repository.deleteById(id);    		
-			}
-		    	catch (DataIntegrityViolationException e) {
-		        	throw new DatabaseException("Falha de integridade referencial");
-		   	}
-		
-	}
-	
+
+    @Autowired
+    private ProductRepository repository;
+
+    @Transactional(readOnly = true)
+    public ProductDTO findById(Long id) {
+        Product product = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Recurso não encontrado"));
+        return new ProductDTO(product);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductDTO> findAll(Pageable pageable) {
+        Page<Product> result = repository.findAll(pageable);
+        return result.map(x -> new ProductDTO(x));
+    }
+
+    @Transactional
+    public ProductDTO insert(ProductDTO dto) {
+        Product entity = new Product();
+        copyDtoToEntity(dto, entity);
+        entity = repository.save(entity);
+        return new ProductDTO(entity);
+    }
+
+    @Transactional
+    public ProductDTO update(Long id, ProductDTO dto) {
+        try {
+            Product entity = repository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity = repository.save(entity);
+            return new ProductDTO(entity);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(Long id) {
+    	if (!repository.existsById(id)) {
+    		throw new ResourceNotFoundException("Recurso não encontrado");
+    	}
+    	try {
+            repository.deleteById(id);    		
+    	}
+        catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Falha de integridade referencial");
+        }
+    }
+
+    private void copyDtoToEntity(ProductDTO dto, Product entity) {
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setImgUrl(dto.getImgUrl());
+    }
 }

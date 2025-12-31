@@ -2,118 +2,187 @@ package com.devsuperior.dscommerce.entities;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_user")
-public class User {
-   
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
-   private String name;
-   
-   @Column(unique = true)   //evitar repeticao do email
-   private String email;
-   private String phone;
-   private LocalDate birthDate;
-   private String password;
-   
-   @OneToMany(mappedBy = "client")
-   private List<Order> orders = new ArrayList<>();
-   
-   public User() {
-	   
-   }
+public class User implements UserDetails {
 
-   public User(Long id, String name, String email, String fone, LocalDate birthDate, String password) {
-	super();
-	this.id = id;
-	this.name = name;
-	this.email = email;
-	this.phone = fone;
-	this.birthDate = birthDate;
-	this.password = password;
-   }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
 
-   public Long getId() {
-	return id;
-   }
+    @Column(unique = true)
+    private String email;
+    private String phone;
+    private LocalDate birthDate;
+    private String password;
 
-   public void setId(Long id) {
-	this.id = id;
-   }
+    @OneToMany(mappedBy = "client")
+    private List<Order> orders = new ArrayList<>();
+    
+    @ManyToMany
+    @JoinTable(name = "tb_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-   public String getName() {
-	return name;
-   }
+    public User() {
+    }
 
-   public void setName(String name) {
-	this.name = name;
-   }
+    public User(Long id, String name, String email, String phone, LocalDate birthDate, String password) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.birthDate = birthDate;
+        this.password = password;
+    }
 
-   public String getEmail() {
-	return email;
-   }
+    public Long getId() {
+        return id;
+    }
 
-   public void setEmail(String email) {
-	this.email = email;
-   }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-   public String getPhone() {
-	return phone;
-   }
+    public String getName() {
+        return name;
+    }
 
-   public void setPhone(String fone) {
-	this.phone = fone;
-   }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-   public LocalDate getBirthDate() {
-	return birthDate;
-   }
+    public String getEmail() {
+        return email;
+    }
 
-   public void setBirthDate(LocalDate birthDate) {
-	this.birthDate = birthDate;
-   }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-   public String getPassword() {
-	return password;
-   }
+    public String getPhone() {
+        return phone;
+    }
 
-   public void setPassword(String password) {
-	this.password = password;
-   }
-   
-   public List<Order> getOrders(){   //metodo para buscar os pedidos do cliente
-	   return orders;
-   }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-   @Override
-   public int hashCode() {
-	return Objects.hash(id);
-   }
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
 
-   @Override
-   public boolean equals(Object obj) {
-	if (this == obj)
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+    
+    
+
+    public Set<Role> getRoles() {
+		return roles;
+	}
+
+    public void addRole(Role role) {
+    	roles.add(role);
+    }
+    
+    public boolean hasRole(String roleName) {
+    	for(Role role : roles) {
+    		if (role.getAuthority().equals(roleName)) {
+    			return true;
+    		}	
+    	}
+    	
+    	return false;
+    }
+	
+
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return roles;
+	}
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
 		return true;
-	if (obj == null)
-		return false;
-	if (getClass() != obj.getClass())
-		return false;
-	User other = (User) obj;
-	return Objects.equals(id, other.id);
-   }
-   
-   
-   
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }
