@@ -8,6 +8,8 @@ import com.devsuperior.dscommerce.entities.Order;
 import com.devsuperior.dscommerce.entities.OrderItem;
 import com.devsuperior.dscommerce.entities.OrderStatus;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class OrderDTO {
 	// esse é o DTO do pedido e ele vai chamar todos os outros Dtos criados associados ao pedido
 	
@@ -17,6 +19,8 @@ public class OrderDTO {
 	
 	private ClientDTO client;
 	private PaymentDTO payment;
+	
+	@NotEmpty(message = "Deve ter pelo menos uma categoria")
 	private List<OrderItemDTO> items = new ArrayList<>();
 	
 	public OrderDTO(Long id, Instant moment, OrderStatus status, ClientDTO client, PaymentDTO payment) {
