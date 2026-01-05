@@ -26,7 +26,7 @@ public class OrderController {
     @Autowired
     private OrderService service;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")  //Controle de acesso por perfil e rota - Somente ADMIN
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')") //Controle de acesso por perfil e rota
     @GetMapping(value = "/{id}")
     public ResponseEntity<OrderDTO> findById(@PathVariable Long id) {
         OrderDTO dto = service.findById(id);
